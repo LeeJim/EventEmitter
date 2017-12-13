@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>EventEmitter Demo</title>
+</head>
+<body>
+  
+</body>
+  <script src="./src/index.js"></script>
+  <script>
+    var myEE = new EventEmitter()
+    var fooListener = function() {
+      console.log('this is foo')
+    }
+    myEE.on('foo', fooListener)
+    myEE.emit('foo')
+    myEE.setMaxListeners(1)
+    myEE.on('foo', () => {})
+  </script>
+</html>
