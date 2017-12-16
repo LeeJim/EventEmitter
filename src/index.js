@@ -29,7 +29,7 @@
    * @param  {function} listener
    * @return {object} reference of EventEmiiter
    */
-  EventEmitter.prototype.on = function(eventName, listener) {
+  EventEmitter.prototype.addEventListener = function(eventName, listener) {
     var listeners = this.eventNames().length
 
     if (listeners >= this.maxListener) {
@@ -43,7 +43,27 @@
     return this
   }
 
-  EventEmitter.prototype.addEventListener = EventEmitter.prototype.on
+  EventEmitter.prototype.on = EventEmitter.prototype.addEventListener
+
+  EventEmitter.prototype.once = function (eventName, listener) {
+    var listeners = this.eventNames().length
+
+    if (listeners >= this.maxListener) {
+      throw new TypeError('MaxListenersExceededWarning: Use emitter.setMaxListeners() to increase limit')
+    }
+
+    if (!(eventName in this.events)) {
+      this.events[eventName] = []
+    }
+
+    var that = this
+    var wrapListener = function() {
+      listener.call(null)
+      that.unbind(eventName, wrapListener)
+    }
+    this.events[eventName].push(wrapListener)
+    return this
+  }
 
   /**
    * Synchronously calls each of the listeners registered for the event named eventName
@@ -129,6 +149,11 @@
       var eventArr = this.events[eventName]
       var len = eventArr.length
 
+      if (len === 1) {
+        delete this.events[eventName]
+        return this
+      }
+
       for (var i = 0; i < len; i++) {
         if (eventArr[i] === listener) {
           this.events[eventName].splice(i, 1)
@@ -138,6 +163,8 @@
     }
     return this
   }
+
+  EventEmitter.prototype.unbind = EventEmitter.prototype.removeListener
 
   /**
    * Removes all listeners, or those of the specified eventName

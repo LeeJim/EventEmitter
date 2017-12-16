@@ -13,9 +13,8 @@
     var fooListener = function() {
       console.log('this is foo')
     }
-    myEE.on('foo', fooListener)
+    myEE.once('foo', fooListener)
     myEE.emit('foo')
-    myEE.setMaxListeners(1)
-    myEE.on('foo', () => {})
+    console.log(myEE)
   </script>
 </html>
