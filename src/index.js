@@ -23,6 +23,14 @@
 
   EventEmitter.defaultMaxListeners = MAX_LISTENER
 
+  var addLimit = function() {
+    var listeners = this.eventNames().length
+
+    if (listeners >= this.maxListener) {
+      throw new TypeError('MaxListenersExceededWarning: Use emitter.setMaxListeners() to increase limit')
+    }
+  }
+
   /**
    * Adds the listener function to the end of the listeners array for the event named eventName
    * @param  {string} eventName
@@ -30,11 +38,7 @@
    * @return {object} reference of EventEmiiter
    */
   EventEmitter.prototype.addEventListener = function(eventName, listener) {
-    var listeners = this.eventNames().length
-
-    if (listeners >= this.maxListener) {
-      throw new TypeError('MaxListenersExceededWarning: Use emitter.setMaxListeners() to increase limit')
-    }
+    addLimit.call(this)
 
     if (!(eventName in this.events)) {
       this.events[eventName] = []
@@ -46,11 +50,7 @@
   EventEmitter.prototype.on = EventEmitter.prototype.addEventListener
 
   EventEmitter.prototype.once = function (eventName, listener) {
-    var listeners = this.eventNames().length
-
-    if (listeners >= this.maxListener) {
-      throw new TypeError('MaxListenersExceededWarning: Use emitter.setMaxListeners() to increase limit')
-    }
+    addLimit.call(this)
 
     if (!(eventName in this.events)) {
       this.events[eventName] = []
